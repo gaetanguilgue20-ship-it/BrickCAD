@@ -1,4 +1,4 @@
-import { BrickData } from '../models/Brick'
+import type { BrickData } from '../models/Brick'
 import { STUD_SPACING, BRICK_HEIGHT } from '../models/units'
 
 interface Footprint {
