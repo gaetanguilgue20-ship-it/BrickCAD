@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import Brick from '../components/Brick'
@@ -10,13 +11,23 @@ const bricks: BrickData[] = [
 ]
 
 function Scene() {
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+
   return (
-    <Canvas camera={{ position: [60, 60, 60], fov: 50 }}>
+    <Canvas
+      camera={{ position: [60, 60, 60], fov: 50 }}
+      onPointerMissed={() => setSelectedId(null)}
+    >
       <ambientLight intensity={0.5} />
       <directionalLight position={[50, 100, 50]} intensity={1} />
 
       {bricks.map((brick) => (
-        <Brick key={brick.id} {...brick} />
+        <Brick
+          key={brick.id}
+          {...brick}
+          isSelected={brick.id === selectedId}
+          onSelect={setSelectedId}
+        />
       ))}
 
       <OrbitControls />
