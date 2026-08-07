@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import Brick from '../components/Brick'
 import type { BrickData } from '../models/Brick'
+import { snapToGrid } from '../models/units'
 
 const initialBricks: BrickData[] = [
   { id: '1', width: 2, length: 4, height: 3, color: 'red', position: [0, 0, 0] },
@@ -18,7 +19,9 @@ function Scene() {
   function updateBrickPosition(id: string, x: number, z: number) {
     setBricks((prev) =>
       prev.map((b) =>
-        b.id === id ? { ...b, position: [x, b.position[1], z] } : b
+        b.id === id
+          ? { ...b, position: [snapToGrid(x), b.position[1], snapToGrid(z)] }
+          : b
       )
     )
   }
