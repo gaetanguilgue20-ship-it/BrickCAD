@@ -4,6 +4,7 @@ import { OrbitControls } from '@react-three/drei'
 import Brick from '../components/Brick'
 import type { BrickData } from '../models/Brick'
 import { snapToGrid } from '../models/units'
+import { computeStackHeight } from './Stacking'
 
 const initialBricks: BrickData[] = [
   { id: '1', width: 2, length: 4, height: 3, color: 'red', position: [0, 0, 0] },
@@ -17,13 +18,18 @@ function Scene() {
   const [draggingId, setDraggingId] = useState<string | null>(null)
 
   function updateBrickPosition(id: string, x: number, z: number) {
-    setBricks((prev) =>
-      prev.map((b) =>
-        b.id === id
-          ? { ...b, position: [snapToGrid(x), b.position[1], snapToGrid(z)] }
-          : b
+    setBricks((prev) => {
+      const dragged = prev.find((b) => b.id === id)
+      if (!dragged) return prev
+
+      const snappedX = snapToGrid(x)
+      const snappedZ = snapToGrid(z)
+      const newY = computeStackHeight(id, dragged.width, dragged.length, snappedX, snappedZ, prev)
+
+      return prev.map((b) =>
+        b.id === id ? { ...b, position: [snappedX, newY, snappedZ] } : b
       )
-    )
+    })
   }
 
   return (
