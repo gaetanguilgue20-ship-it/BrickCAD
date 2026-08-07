@@ -5,9 +5,10 @@ import { STUD_SPACING, BRICK_HEIGHT, STUD_RADIUS, STUD_HEIGHT } from '../models/
 interface BrickProps extends BrickData {
   isSelected: boolean
   onSelect: (id: string) => void
+  onDragStart: () => void
 }
 
-function Brick({ id, width, length, height, color, position = [0, 0, 0], isSelected, onSelect }: BrickProps) {
+function Brick({ id, width, length, height, color, position = [0, 0, 0], isSelected, onSelect, onDragStart }: BrickProps) {
   const [hovered, setHovered] = useState(false)
 
   const w = width * STUD_SPACING
@@ -32,6 +33,11 @@ function Brick({ id, width, length, height, color, position = [0, 0, 0], isSelec
       onClick={(e) => {
         e.stopPropagation()
         onSelect(id)
+      }}
+      onPointerDown={(e) => {
+        e.stopPropagation()
+        onSelect(id)
+        onDragStart()
       }}
       onPointerOver={(e) => {
         e.stopPropagation()
