@@ -1,7 +1,7 @@
 import type { BrickData } from '../models/Brick'
 import { STUD_SPACING, BRICK_HEIGHT, STUD_RADIUS, STUD_HEIGHT } from '../models/units'
 
-function Brick({ width, length, height, color }: BrickData) {
+function Brick({ width, length, height, color, position = [0, 0, 0] }: BrickData) {
   const w = width * STUD_SPACING
   const l = length * STUD_SPACING
   const h = (height * BRICK_HEIGHT) / 3
@@ -17,7 +17,7 @@ function Brick({ width, length, height, color }: BrickData) {
   }
 
   return (
-    <group>
+    <group position={position}>
       <mesh position={[0, h / 2, 0]}>
         <boxGeometry args={[w, h, l]} />
         <meshStandardMaterial color={color} />
