@@ -35,7 +35,7 @@ function CatalogPanel({
 	const pieceCounts = useMemo(() => {
 		const counts = new Map<string, number>()
 		for (const b of bricks) {
-			const key = `${getSizeName(b.width, b.length)} — ${getColorName(b.color)}`
+			const key = `${getSizeName(b.width, b.length, b.height)} — ${getColorName(b.color)}`
 			counts.set(key, (counts.get(key) ?? 0) + 1)
 		}
 		return Array.from(counts.entries())
