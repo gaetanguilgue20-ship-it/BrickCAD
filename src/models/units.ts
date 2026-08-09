@@ -9,3 +9,11 @@ export const WALL_MARGIN = 0.1
 export function snapToGrid(value: number): number {
   return Math.round(value / STUD_SPACING) * STUD_SPACING
 }
+
+// Arrondit une valeur à la grille des plots, en tenant compte de la parité
+// de la dimension de la brique sur cet axe (nombre de plots : width ou length)
+export function snapAxis(value: number, sizeInStuds: number): number {
+  const isEven = sizeInStuds % 2 === 0
+  const offset = isEven ? STUD_SPACING / 2 : 0
+  return Math.round((value - offset) / STUD_SPACING) * STUD_SPACING + offset
+}

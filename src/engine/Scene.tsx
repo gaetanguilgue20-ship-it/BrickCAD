@@ -4,13 +4,13 @@ import { OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 import Brick from '../components/Brick'
 import type { BrickData } from '../models/Brick'
-import { snapToGrid } from '../models/units'
+import { snapAxis } from '../models/units'
 import { computeStackHeight } from './stacking'
 
 const initialBricks: BrickData[] = [
   { id: '1', width: 2, length: 4, height: 3, color: 'red', position: [0, 0, 0] },
   { id: '2', width: 2, length: 4, height: 3, color: 'blue', position: [0, 9.6, 0] },
-  { id: '3', width: 1, length: 2, height: 3, color: 'yellow', position: [30, 0, 0] },
+  { id: '3', width: 1, length: 2, height: 3, color: 'yellow', position: [32, 0, 0] },
 ]
 
 // Plan mathématique horizontal (y = 0), indépendant de tout objet visible
@@ -48,8 +48,8 @@ function Scene() {
       const dragged = prev.find((b) => b.id === id)
       if (!dragged) return prev
 
-      const snappedX = snapToGrid(x)
-      const snappedZ = snapToGrid(z)
+      const snappedX = snapAxis(x, dragged.width)
+      const snappedZ = snapAxis(z, dragged.length)
       const newY = computeStackHeight(id, dragged.width, dragged.length, snappedX, snappedZ, prev)
 
       return prev.map((b) =>
