@@ -3,6 +3,7 @@ import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 import Brick from '../components/Brick'
+import SlopeBrick from '../components/SlopeBricks'
 import type { BrickData } from '../models/Brick'
 import { snapAxis, effectiveSize, STUD_SPACING } from '../models/units'
 import { computeStackHeight } from './stacking'
@@ -155,18 +156,23 @@ function Scene({ bricks, updateBricks, commitBricks, viewMode }: SceneProps) {
 
       <DragTracker draggingId={draggingId} onDrag={(x, z) => updateBrickPosition(draggingId as string, x, z)} />
 
-      {bricks.map((brick) => (
-        <Brick
-          key={brick.id}
-          {...brick}
-          isSelected={brick.id === selectedId}
-          onSelect={setSelectedId}
-          onDragStart={() => {
+      {bricks.map((brick) => {
+        const commonProps = {
+          ...brick,
+          isSelected: brick.id === selectedId,
+          onSelect: setSelectedId,
+          onDragStart: () => {
             commitBricks((prev) => prev)
             setDraggingId(brick.id)
-          }}
-        />
-      ))}
+          },
+        }
+
+        return brick.shape === 'slope' ? (
+          <SlopeBrick key={brick.id} {...commonProps} />
+        ) : (
+          <Brick key={brick.id} {...commonProps} />
+        )
+      })}
 
       <CameraController viewMode={viewMode} draggingId={draggingId} />
     </Canvas>

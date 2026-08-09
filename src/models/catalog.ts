@@ -3,11 +3,10 @@ export interface CatalogItem {
   name: string
   width: number
   length: number
-  height: number // 3 = brique standard, 1 = plate (1/3 de la hauteur d'une brique)
-  category: 'brick' | 'plate'
+  height: number
+  shape: 'block' | 'slope'
 }
 
-// Tailles courantes, en évitant les doublons (ex: 2x4 et 4x2 sont la même pièce, orientable via rotation)
 const SIZES: [number, number][] = [
   [1, 1], [1, 2], [1, 3], [1, 4], [1, 6], [1, 8], [1, 10], [1, 12],
   [2, 2], [2, 3], [2, 4], [2, 6], [2, 8], [2, 10], [2, 12],
@@ -17,22 +16,29 @@ const SIZES: [number, number][] = [
   [8, 8],
 ]
 
-function buildCatalog(category: 'brick' | 'plate', height: number, prefix: string): CatalogItem[] {
+function buildCatalog(height: number, prefix: string): CatalogItem[] {
   return SIZES.map(([w, l]) => ({
     catalogId: `${prefix}-${w}x${l}`,
     name: `${w}×${l}`,
     width: w,
     length: l,
     height,
-    category,
+    shape: 'block',
   }))
 }
 
-export const BRICKS: CatalogItem[] = buildCatalog('brick', 3, 'brick')
-export const PLATES: CatalogItem[] = buildCatalog('plate', 1, 'plate')
+export const BRICKS: CatalogItem[] = buildCatalog(3, 'brick')
+export const PLATES: CatalogItem[] = buildCatalog(1, 'plate')
 
-// Gardé pour compatibilité (utilisé ailleurs) — regroupe tout
-export const BRICK_SIZES: CatalogItem[] = [...BRICKS, ...PLATES]
+export const SLOPES: CatalogItem[] = [
+  { catalogId: 'slope-2x1', name: '2×1', width: 2, length: 1, height: 3, shape: 'slope' },
+  { catalogId: 'slope-3x1', name: '3×1', width: 3, length: 1, height: 3, shape: 'slope' },
+  { catalogId: 'slope-4x1', name: '4×1', width: 4, length: 1, height: 3, shape: 'slope' },
+  { catalogId: 'slope-2x2', name: '2×2', width: 2, length: 2, height: 3, shape: 'slope' },
+  { catalogId: 'slope-4x2', name: '4×2', width: 4, length: 2, height: 3, shape: 'slope' },
+]
+
+const ALL_ITEMS: CatalogItem[] = [...BRICKS, ...PLATES, ...SLOPES]
 
 export const COLORS: { name: string; hex: string }[] = [
   { name: 'Rouge', hex: '#c91a09' },
@@ -45,10 +51,11 @@ export const COLORS: { name: string; hex: string }[] = [
   { name: 'Gris', hex: '#6c6e68' },
 ]
 
-export function getSizeName(width: number, length: number, height: number): string {
-  const category = height === 1 ? 'Plaque' : 'Brique'
-  const match = BRICK_SIZES.find(
+export function getSizeName(width: number, length: number, height: number, shape: 'block' | 'slope'): string {
+  const category = shape === 'slope' ? 'Pente' : height === 1 ? 'Plaque' : 'Brique'
+  const match = ALL_ITEMS.find(
     (b) =>
+      b.shape === shape &&
       b.height === height &&
       ((b.width === width && b.length === length) || (b.width === length && b.length === width))
   )

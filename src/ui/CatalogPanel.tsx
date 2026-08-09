@@ -1,10 +1,10 @@
 import { useState, useRef, useMemo } from 'react'
-import { BRICKS, PLATES, COLORS, getSizeName, getColorName } from '../models/catalog'
+import { BRICKS, PLATES, SLOPES, COLORS, getSizeName, getColorName } from '../models/catalog'
 import type { BrickData } from '../models/Brick'
 import { saveToLocalStorage, loadFromLocalStorage, exportToFile, importFromFile } from '../engine/storage'
 
 interface CatalogPanelProps {
-	onAddBrick: (width: number, length: number, height: number, color: string) => void
+	onAddBrick: (width: number, length: number, height: number, color: string, shape: BrickData['shape']) => void
 	bricks: BrickData[]
 	onLoadBricks: (bricks: BrickData[]) => void
 	onUndo: () => void
@@ -27,15 +27,15 @@ function CatalogPanel({
 	onToggleView,
 }: CatalogPanelProps) {
 	const [selectedColor, setSelectedColor] = useState(COLORS[0].hex)
-	const [activeTab, setActiveTab] = useState<'brick' | 'plate'>('brick')
+	const [activeTab, setActiveTab] = useState<'brick' | 'plate' | 'slope'>('brick')
 	const fileInputRef = useRef<HTMLInputElement>(null)
 
-	const items = activeTab === 'brick' ? BRICKS : PLATES
+	const items = activeTab === 'brick' ? BRICKS : activeTab === 'plate' ? PLATES : SLOPES
 
 	const pieceCounts = useMemo(() => {
 		const counts = new Map<string, number>()
 		for (const b of bricks) {
-			const key = `${getSizeName(b.width, b.length, b.height)} — ${getColorName(b.color)}`
+			const key = `${getSizeName(b.width, b.length, b.height, b.shape)} — ${getColorName(b.color)}`
 			counts.set(key, (counts.get(key) ?? 0) + 1)
 		}
 		return Array.from(counts.entries())
@@ -130,6 +130,12 @@ function CatalogPanel({
 			>
 				Plaques
 			</button>
+			<button
+				onClick={() => setActiveTab('slope')}
+				style={{ ...buttonStyle, flex: 1, background: activeTab === 'slope' ? '#3a3a3a' : '#2a2a2a', textAlign: 'center' }}
+			>
+				Pentes
+			</button>
 		</div>
 		<div
 			style={{
@@ -144,7 +150,7 @@ function CatalogPanel({
 			{items.map((item) => (
 				<button
 					key={item.catalogId}
-					onClick={() => onAddBrick(item.width, item.length, item.height, selectedColor)}
+					onClick={() => onAddBrick(item.width, item.length, item.height, selectedColor, item.shape)}
 					style={{ ...buttonStyle, display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}
 				>
 					<span

@@ -6,9 +6,9 @@ import { historyReducer, type HistoryState } from './engine/history'
 import { loadFromLocalStorage, hasSavedData } from './engine/storage'
 
 const initialBricks: BrickData[] = [
-  { id: '1', width: 2, length: 4, height: 3, color: '#c91a09', position: [0, 0, 0], rotation: 0 },
-  { id: '2', width: 2, length: 4, height: 3, color: '#0055bf', position: [0, 9.6, 0], rotation: 0 },
-  { id: '3', width: 1, length: 2, height: 3, color: '#f2cd37', position: [32, 0, 0], rotation: 0 },
+  { id: '1', width: 2, length: 4, height: 3, color: '#c91a09', position: [0, 0, 0], rotation: 0, shape: 'block' },
+  { id: '2', width: 2, length: 4, height: 3, color: '#0055bf', position: [0, 9.6, 0], rotation: 0, shape: 'block' },
+  { id: '3', width: 1, length: 2, height: 3, color: '#f2cd37', position: [32, 0, 0], rotation: 0, shape: 'block' },
 ]
 
 const initialHistoryState: HistoryState = { bricks: initialBricks, past: [], future: [] }
@@ -38,7 +38,7 @@ function App() {
     dispatch({ type: 'load', bricks: newBricks })
   }
 
-  function addBrick(width: number, length: number, height: number, color: string) {
+  function addBrick(width: number, length: number, height: number, color: string, shape: BrickData['shape'] = 'block') {
     commitBricks((prev) => [
       ...prev,
       {
@@ -49,6 +49,7 @@ function App() {
         color,
         position: [80, 0, 0],
         rotation: 0,
+        shape,
       },
     ])
   }

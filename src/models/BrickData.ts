@@ -5,4 +5,5 @@ export interface BrickData {
   height: number
   color: string
   position: [number, number, number] // [x, y, z]
+  shape: 'block' | 'slope'
 }

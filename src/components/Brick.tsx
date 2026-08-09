@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { BrickData } from '../models/Brick'
 import { STUD_SPACING, BRICK_HEIGHT, STUD_RADIUS, STUD_HEIGHT } from '../models/units'
+import SlopeBrick from './SlopeBricks'
 
 interface BrickProps extends BrickData {
   isSelected: boolean
@@ -8,7 +9,7 @@ interface BrickProps extends BrickData {
   onDragStart: () => void
 }
 
-function Brick({ id, width, length, height, color, position = [0, 0, 0], rotation = 0, isSelected, onSelect, onDragStart }: BrickProps) {
+function Brick({ id, width, length, height, color, position = [0, 0, 0], rotation = 0, shape = 'block', isSelected, onSelect, onDragStart }: BrickProps) {
   const [hovered, setHovered] = useState(false)
 
   const w = width * STUD_SPACING
@@ -26,6 +27,24 @@ function Brick({ id, width, length, height, color, position = [0, 0, 0], rotatio
   }
 
   const displayColor = isSelected ? '#ffdd00' : color
+
+  if (shape === 'slope') {
+    return (
+      <SlopeBrick
+        id={id}
+        width={width}
+        length={length}
+        height={height}
+        color={color}
+        position={position}
+        rotation={rotation}
+        shape={shape}
+        isSelected={isSelected}
+        onSelect={onSelect}
+        onDragStart={onDragStart}
+      />
+    )
+  }
 
   return (
     <group
