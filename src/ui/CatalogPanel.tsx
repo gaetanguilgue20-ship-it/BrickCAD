@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo } from 'react'
-import { BRICK_SIZES, COLORS, getSizeName, getColorName } from '../models/catalog'
+import { BRICKS, PLATES, COLORS, getSizeName, getColorName } from '../models/catalog'
 import type { BrickData } from '../models/Brick'
 import { saveToLocalStorage, loadFromLocalStorage, exportToFile, importFromFile } from '../engine/storage'
 
@@ -27,7 +27,10 @@ function CatalogPanel({
 	onToggleView,
 }: CatalogPanelProps) {
 	const [selectedColor, setSelectedColor] = useState(COLORS[0].hex)
+	const [activeTab, setActiveTab] = useState<'brick' | 'plate'>('brick')
 	const fileInputRef = useRef<HTMLInputElement>(null)
+
+	const items = activeTab === 'brick' ? BRICKS : PLATES
 
 	const pieceCounts = useMemo(() => {
 		const counts = new Map<string, number>()
@@ -113,21 +116,45 @@ function CatalogPanel({
 				))}
 			</div>
 
-			<p style={sectionTitle}>Briques</p>
-			<div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '20px' }}>
-				{BRICK_SIZES.map((item) => (
-					<button
-						key={item.catalogId}
-						onClick={() => onAddBrick(item.width, item.length, item.height, selectedColor)}
-						style={{ ...buttonStyle, display: 'flex', alignItems: 'center', gap: '8px' }}
-					>
-						<span
-							style={{
-								width: '14px',
-								height: '14px',
-								background: selectedColor,
-								borderRadius: '3px',
-								display: 'inline-block',
+<p style={sectionTitle}>Pièces</p>
+		<div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
+			<button
+				onClick={() => setActiveTab('brick')}
+				style={{ ...buttonStyle, flex: 1, background: activeTab === 'brick' ? '#3a3a3a' : '#2a2a2a', textAlign: 'center' }}
+			>
+				Briques
+			</button>
+			<button
+				onClick={() => setActiveTab('plate')}
+				style={{ ...buttonStyle, flex: 1, background: activeTab === 'plate' ? '#3a3a3a' : '#2a2a2a', textAlign: 'center' }}
+			>
+				Plaques
+			</button>
+		</div>
+		<div
+			style={{
+				display: 'grid',
+				gridTemplateColumns: '1fr 1fr',
+				gap: '6px',
+				marginBottom: '20px',
+				maxHeight: '260px',
+				overflowY: 'auto',
+			}}
+		>
+			{items.map((item) => (
+				<button
+					key={item.catalogId}
+					onClick={() => onAddBrick(item.width, item.length, item.height, selectedColor)}
+					style={{ ...buttonStyle, display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}
+				>
+					<span
+						style={{
+							width: '12px',
+							height: '12px',
+							background: selectedColor,
+							borderRadius: '3px',
+							display: 'inline-block',
+							flexShrink: 0,
 							}}
 						/>
 						{item.name}
