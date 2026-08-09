@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
@@ -38,6 +38,18 @@ interface SceneProps {
 function Scene({ bricks, setBricks }: SceneProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [draggingId, setDraggingId] = useState<string | null>(null)
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedId) {
+        setBricks((prev) => prev.filter((b) => b.id !== selectedId))
+        setSelectedId(null)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [selectedId, setBricks])
 
   function updateBrickPosition(id: string, x: number, z: number) {
     setBricks((prev) => {
