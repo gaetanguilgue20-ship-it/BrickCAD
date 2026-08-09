@@ -31,7 +31,13 @@ function DragTracker({
 }
 
 // Gère la position de la caméra selon le mode de vue choisi
-function CameraController({ viewMode }: { viewMode: 'perspective' | 'top' }) {
+function CameraController({
+  viewMode,
+  draggingId,
+}: {
+  viewMode: 'perspective' | 'top'
+  draggingId: string | null
+}) {
   const { camera } = useThree()
   const controlsRef = useRef<any>(null)
 
@@ -46,7 +52,7 @@ function CameraController({ viewMode }: { viewMode: 'perspective' | 'top' }) {
     controlsRef.current?.update()
   }, [viewMode, camera])
 
-  return <OrbitControls ref={controlsRef} makeDefault />
+  return <OrbitControls ref={controlsRef} makeDefault enabled={!draggingId} />
 }
 
 interface SceneProps {
@@ -162,7 +168,7 @@ function Scene({ bricks, updateBricks, commitBricks, viewMode }: SceneProps) {
         />
       ))}
 
-      <CameraController viewMode={viewMode} />
+      <CameraController viewMode={viewMode} draggingId={draggingId} />
     </Canvas>
   )
 }
