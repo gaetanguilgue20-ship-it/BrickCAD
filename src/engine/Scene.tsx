@@ -7,17 +7,9 @@ import type { BrickData } from '../models/Brick'
 import { snapAxis } from '../models/units'
 import { computeStackHeight } from './stacking'
 
-const initialBricks: BrickData[] = [
-  { id: '1', width: 2, length: 4, height: 3, color: 'red', position: [0, 0, 0] },
-  { id: '2', width: 2, length: 4, height: 3, color: 'blue', position: [0, 9.6, 0] },
-  { id: '3', width: 1, length: 2, height: 3, color: 'yellow', position: [32, 0, 0] },
-]
-
-// Plan mathématique horizontal (y = 0), indépendant de tout objet visible
 const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)
 const intersectionPoint = new THREE.Vector3()
 
-// Ce composant ne rend rien : il calcule juste, à chaque frame, où pointe la souris sur le plan
 function DragTracker({
   draggingId,
   onDrag,
@@ -38,8 +30,12 @@ function DragTracker({
   return null
 }
 
-function Scene() {
-  const [bricks, setBricks] = useState<BrickData[]>(initialBricks)
+interface SceneProps {
+  bricks: BrickData[]
+  setBricks: React.Dispatch<React.SetStateAction<BrickData[]>>
+}
+
+function Scene({ bricks, setBricks }: SceneProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [draggingId, setDraggingId] = useState<string | null>(null)
 
