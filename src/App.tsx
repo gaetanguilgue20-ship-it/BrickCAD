@@ -27,7 +27,7 @@ function App() {
 
   return (
     <div style={{ display: 'flex', width: '100vw', height: '100vh' }}>
-      <CatalogPanel onAddBrick={addBrick} />
+      <CatalogPanel onAddBrick={addBrick} bricks={bricks} onLoadBricks={setBricks} />
       <div style={{ flex: 1 }}>
         <Scene bricks={bricks} setBricks={setBricks} />
       </div>
