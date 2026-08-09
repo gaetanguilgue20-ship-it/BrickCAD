@@ -17,3 +17,9 @@ export function snapAxis(value: number, sizeInStuds: number): number {
   const offset = isEven ? STUD_SPACING / 2 : 0
   return Math.round((value - offset) / STUD_SPACING) * STUD_SPACING + offset
 }
+
+// Retourne [largeur effective, longueur effective] en tenant compte de la rotation
+export function effectiveSize(width: number, length: number, rotation: number): [number, number] {
+  const isSwapped = rotation === 90 || rotation === 270
+  return isSwapped ? [length, width] : [width, length]
+}

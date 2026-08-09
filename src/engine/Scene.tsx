@@ -4,7 +4,7 @@ import { OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 import Brick from '../components/Brick'
 import type { BrickData } from '../models/Brick'
-import { snapAxis } from '../models/units'
+import { snapAxis, effectiveSize } from '../models/units'
 import { computeStackHeight } from './stacking'
 
 const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)
@@ -45,6 +45,25 @@ function Scene({ bricks, setBricks }: SceneProps) {
         setBricks((prev) => prev.filter((b) => b.id !== selectedId))
         setSelectedId(null)
       }
+
+      if (e.key.toLowerCase() === 'r' && selectedId) {
+        setBricks((prev) =>
+          prev.map((b) => {
+            if (b.id !== selectedId) return b
+            const newRotation = (b.rotation + 90) % 360
+            const newY = computeStackHeight(
+              b.id,
+              b.width,
+              b.length,
+              newRotation,
+              b.position[0],
+              b.position[2],
+              prev
+            )
+            return { ...b, rotation: newRotation, position: [b.position[0], newY, b.position[2]] }
+          })
+        )
+      }
     }
 
     window.addEventListener('keydown', handleKeyDown)
@@ -56,9 +75,18 @@ function Scene({ bricks, setBricks }: SceneProps) {
       const dragged = prev.find((b) => b.id === id)
       if (!dragged) return prev
 
-      const snappedX = snapAxis(x, dragged.width)
-      const snappedZ = snapAxis(z, dragged.length)
-      const newY = computeStackHeight(id, dragged.width, dragged.length, snappedX, snappedZ, prev)
+      const [effW, effL] = effectiveSize(dragged.width, dragged.length, dragged.rotation)
+      const snappedX = snapAxis(x, effW)
+      const snappedZ = snapAxis(z, effL)
+      const newY = computeStackHeight(
+        id,
+        dragged.width,
+        dragged.length,
+        dragged.rotation,
+        snappedX,
+        snappedZ,
+        prev
+      )
 
       return prev.map((b) =>
         b.id === id ? { ...b, position: [snappedX, newY, snappedZ] } : b

@@ -4,5 +4,6 @@ export interface BrickData {
   length: number
   height: number
   color: string
-  position: [number, number, number] // [x, y, z]
+  position: [number, number, number]
+  rotation: number // en degrés : 0, 90, 180 ou 270
 }

@@ -4,9 +4,9 @@ import CatalogPanel from './ui/CatalogPanel'
 import type { BrickData } from './models/Brick'
 
 const initialBricks: BrickData[] = [
-  { id: '1', width: 2, length: 4, height: 3, color: '#c91a09', position: [0, 0, 0] },
-  { id: '2', width: 2, length: 4, height: 3, color: '#0055bf', position: [0, 9.6, 0] },
-  { id: '3', width: 1, length: 2, height: 3, color: '#f2cd37', position: [32, 0, 0] },
+  { id: '1', width: 2, length: 4, height: 3, color: '#c91a09', position: [0, 0, 0], rotation: 0 },
+  { id: '2', width: 2, length: 4, height: 3, color: '#0055bf', position: [0, 9.6, 0], rotation: 0 },
+  { id: '3', width: 1, length: 2, height: 3, color: '#f2cd37', position: [32, 0, 0], rotation: 0 },
 ]
 
 function App() {
@@ -20,6 +20,7 @@ function App() {
       height,
       color,
       position: [80, 0, 0], // point d'apparition par défaut, à côté de la zone principale
+      rotation: 0,
     }
     setBricks((prev) => [...prev, newBrick])
   }

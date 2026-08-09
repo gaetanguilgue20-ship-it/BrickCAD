@@ -1,5 +1,5 @@
 import type { BrickData } from '../models/Brick'
-import { STUD_SPACING, BRICK_HEIGHT } from '../models/units'
+import { STUD_SPACING, BRICK_HEIGHT, effectiveSize } from '../models/units'
 
 interface Footprint {
   minX: number
@@ -8,39 +8,49 @@ interface Footprint {
   maxZ: number
 }
 
-// Calcule l'emprise au sol (rectangle) d'une brique à une position donnée
-export function getFootprint(width: number, length: number, x: number, z: number): Footprint {
-  const halfW = (width * STUD_SPACING) / 2
-  const halfL = (length * STUD_SPACING) / 2
+export function getFootprint(
+  width: number,
+  length: number,
+  rotation: number,
+  x: number,
+  z: number
+): Footprint {
+  const [w, l] = effectiveSize(width, length, rotation)
+  const halfW = (w * STUD_SPACING) / 2
+  const halfL = (l * STUD_SPACING) / 2
   return { minX: x - halfW, maxX: x + halfW, minZ: z - halfL, maxZ: z + halfL }
 }
 
-// Deux emprises se chevauchent-elles ?
 function overlaps(a: Footprint, b: Footprint): boolean {
   return a.minX < b.maxX && a.maxX > b.minX && a.minZ < b.maxZ && a.maxZ > b.minZ
 }
 
-// Hauteur réelle (mm) d'une brique
 export function brickHeightMM(brick: BrickData): number {
   return (brick.height * BRICK_HEIGHT) / 3
 }
 
-// Calcule la hauteur à laquelle poser une brique en fonction de ce qu'il y a en dessous
 export function computeStackHeight(
   draggedId: string,
   width: number,
   length: number,
+  rotation: number,
   x: number,
   z: number,
   allBricks: BrickData[]
 ): number {
-  const footprint = getFootprint(width, length, x, z)
-  let topY = 0 // par défaut, le sol
+  const footprint = getFootprint(width, length, rotation, x, z)
+  let topY = 0
 
   for (const brick of allBricks) {
-    if (brick.id === draggedId) continue // on ignore la brique qu'on déplace elle-même
+    if (brick.id === draggedId) continue
 
-    const otherFootprint = getFootprint(brick.width, brick.length, brick.position[0], brick.position[2])
+    const otherFootprint = getFootprint(
+      brick.width,
+      brick.length,
+      brick.rotation,
+      brick.position[0],
+      brick.position[2]
+    )
     if (overlaps(footprint, otherFootprint)) {
       const brickTop = brick.position[1] + brickHeightMM(brick)
       if (brickTop > topY) {

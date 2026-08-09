@@ -8,7 +8,7 @@ interface BrickProps extends BrickData {
   onDragStart: () => void
 }
 
-function Brick({ id, width, length, height, color, position = [0, 0, 0], isSelected, onSelect, onDragStart }: BrickProps) {
+function Brick({ id, width, length, height, color, position = [0, 0, 0], rotation = 0, isSelected, onSelect, onDragStart }: BrickProps) {
   const [hovered, setHovered] = useState(false)
 
   const w = width * STUD_SPACING
@@ -30,6 +30,7 @@ function Brick({ id, width, length, height, color, position = [0, 0, 0], isSelec
   return (
     <group
       position={position}
+      rotation={[0, (rotation * Math.PI) / 180, 0]}
       onClick={(e) => {
         e.stopPropagation()
         onSelect(id)
