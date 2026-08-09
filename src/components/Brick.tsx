@@ -46,7 +46,7 @@ function Brick({ id, width, length, height, color, position = [0, 0, 0], rotatio
       }}
       onPointerOut={() => setHovered(false)}
     >
-      <mesh position={[0, h / 2, 0]}>
+      <mesh position={[0, h / 2, 0]} castShadow receiveShadow>
         <boxGeometry args={[w, h, l]} />
         <meshStandardMaterial
           color={displayColor}
@@ -55,7 +55,7 @@ function Brick({ id, width, length, height, color, position = [0, 0, 0], rotatio
       </mesh>
 
       {studs.map((stud, i) => (
-        <mesh key={i} position={[stud.x, h + STUD_HEIGHT / 2, stud.z]}>
+        <mesh key={i} position={[stud.x, h + STUD_HEIGHT / 2, stud.z]} castShadow receiveShadow>
           <cylinderGeometry args={[STUD_RADIUS, STUD_RADIUS, STUD_HEIGHT, 16]} />
           <meshStandardMaterial
             color={displayColor}

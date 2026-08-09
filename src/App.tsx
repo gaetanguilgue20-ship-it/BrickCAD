@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useReducer, useEffect, useState } from 'react'
 import Scene from './engine/Scene'
 import CatalogPanel from './ui/CatalogPanel'
 import type { BrickData } from './models/Brick'
+import { historyReducer, type HistoryState } from './engine/history'
+import { loadFromLocalStorage, hasSavedData } from './engine/storage'
 
 const initialBricks: BrickData[] = [
   { id: '1', width: 2, length: 4, height: 3, color: '#c91a09', position: [0, 0, 0], rotation: 0 },
@@ -9,27 +11,68 @@ const initialBricks: BrickData[] = [
   { id: '3', width: 1, length: 2, height: 3, color: '#f2cd37', position: [32, 0, 0], rotation: 0 },
 ]
 
+const initialHistoryState: HistoryState = { bricks: initialBricks, past: [], future: [] }
+
 function App() {
-  const [bricks, setBricks] = useState<BrickData[]>(initialBricks)
+  const [state, dispatch] = useReducer(historyReducer, initialHistoryState)
+  const [viewMode, setViewMode] = useState<'perspective' | 'top'>('perspective')
+
+  useEffect(() => {
+    if (hasSavedData()) {
+      const loaded = loadFromLocalStorage()
+      if (loaded) {
+        dispatch({ type: 'load', bricks: loaded })
+      }
+    }
+  }, [])
+
+  function updateBricks(updater: (prev: BrickData[]) => BrickData[]) {
+    dispatch({ type: 'set', updater })
+  }
+
+  function commitBricks(updater: (prev: BrickData[]) => BrickData[]) {
+    dispatch({ type: 'commit', updater })
+  }
+
+  function loadBricks(newBricks: BrickData[]) {
+    dispatch({ type: 'load', bricks: newBricks })
+  }
 
   function addBrick(width: number, length: number, height: number, color: string) {
-    const newBrick: BrickData = {
-      id: crypto.randomUUID(),
-      width,
-      length,
-      height,
-      color,
-      position: [80, 0, 0], // point d'apparition par défaut, à côté de la zone principale
-      rotation: 0,
-    }
-    setBricks((prev) => [...prev, newBrick])
+    commitBricks((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        width,
+        length,
+        height,
+        color,
+        position: [80, 0, 0],
+        rotation: 0,
+      },
+    ])
   }
 
   return (
     <div style={{ display: 'flex', width: '100vw', height: '100vh' }}>
-      <CatalogPanel onAddBrick={addBrick} bricks={bricks} onLoadBricks={setBricks} />
+      <CatalogPanel
+        onAddBrick={addBrick}
+        bricks={state.bricks}
+        onLoadBricks={loadBricks}
+        onUndo={() => dispatch({ type: 'undo' })}
+        onRedo={() => dispatch({ type: 'redo' })}
+        canUndo={state.past.length > 0}
+        canRedo={state.future.length > 0}
+        viewMode={viewMode}
+        onToggleView={() => setViewMode((v) => (v === 'perspective' ? 'top' : 'perspective'))}
+      />
       <div style={{ flex: 1 }}>
-        <Scene bricks={bricks} setBricks={setBricks} />
+        <Scene
+          bricks={state.bricks}
+          updateBricks={updateBricks}
+          commitBricks={commitBricks}
+          viewMode={viewMode}
+        />
       </div>
     </div>
   )

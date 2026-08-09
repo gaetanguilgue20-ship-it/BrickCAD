@@ -31,3 +31,15 @@ export const COLORS: { name: string; hex: string }[] = [
 	{ name: 'Gris', hex: '#6c6e68' },
 ]
 
+export function getSizeName(width: number, length: number): string {
+	const match = BRICK_SIZES.find(
+		(b) => (b.width === width && b.length === length) || (b.width === length && b.length === width)
+	)
+	return match ? match.name : `${width}×${length}`
+}
+
+export function getColorName(hex: string): string {
+	const match = COLORS.find((c) => c.hex.toLowerCase() === hex.toLowerCase())
+	return match ? match.name : hex
+}
+
